@@ -16,6 +16,11 @@ public class Application {
         return "index";
     }
     
+    @RequestMapping("/hello")
+    String hello() {
+        return "hello";
+    }
+    
     /**
      * main
      * @param args the command line arguments

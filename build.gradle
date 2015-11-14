@@ -5,6 +5,11 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
+mainClassName = 'jp.pigumer.sso.Application'
+if (!project.hasProperty('mainClass')) {
+    ext.mainClass = mainClassName
+}
+
 buildscript {
     repositories {
         mavenCentral()
