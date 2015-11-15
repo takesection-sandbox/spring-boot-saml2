@@ -32,5 +32,8 @@ repositories {
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'org.springframework.boot:spring-boot-starter-security'
-    compile 'org.springframework.security.extensions:spring-security-saml2-core:1.0.1.RELEASE'
+    compile ('org.springframework.security.extensions:spring-security-saml2-core:1.0.1.RELEASE') {
+        exclude module: 'not-yet-commons-ssl'
+    }
+    compile files('lib/not-yet-commons-ssl-0.3.17.jar')
 }
