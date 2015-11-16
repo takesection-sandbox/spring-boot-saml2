@@ -11,9 +11,7 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.velocity.app.VelocityEngine;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider;
 import org.opensaml.util.resource.ClasspathResource;
 import org.opensaml.xml.parse.ParserPool;
@@ -33,7 +31,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLBootstrap;
-import org.springframework.security.saml.SAMLDiscovery;
 import org.springframework.security.saml.SAMLEntryPoint;
 import org.springframework.security.saml.SAMLLogoutFilter;
 import org.springframework.security.saml.SAMLLogoutProcessingFilter;
