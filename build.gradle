@@ -5,11 +5,6 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-mainClassName = 'jp.pigumer.sso.Application'
-if (!project.hasProperty('mainClass')) {
-    ext.mainClass = mainClassName
-}
-
 buildscript {
     repositories {
         mavenCentral()
@@ -21,7 +16,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.7.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.0.RELEASE")
     }
 }
 
