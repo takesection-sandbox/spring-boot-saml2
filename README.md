@@ -9,7 +9,7 @@
 
 src/main/resource/saml/idp.xmlを使用するIdentity Providerからダウンロードしてください。
 
-*** OpenAMの場合
+### OpenAMの場合
 
 ```
 curl -o idp.xml https://[IDP Host Name]/[ContextPath]/saml2/jsp/exportmetadata.jsp
