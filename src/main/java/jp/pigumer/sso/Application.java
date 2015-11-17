@@ -17,6 +17,13 @@ public class Application {
         return "index";
     }
     
+    /**
+     * /hello.
+     * 
+     * @param user User
+     * @param model Model
+     * @return hello
+     */
     @RequestMapping("/hello")
     String hello(@CurrentUser User user, Model model) {
         model.addAttribute("user", user.getUsername());
