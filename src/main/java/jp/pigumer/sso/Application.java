@@ -2,6 +2,7 @@ package jp.pigumer.sso;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,8 @@ public class Application {
     }
     
     @RequestMapping("/hello")
-    String hello() {
+    String hello(@CurrentUser User user, Model model) {
+        model.addAttribute("user", user.getUsername());
         return "hello";
     }
     
