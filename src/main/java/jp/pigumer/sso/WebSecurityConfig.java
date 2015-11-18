@@ -17,7 +17,6 @@ import org.opensaml.util.resource.ClasspathResource;
 import org.opensaml.xml.parse.ParserPool;
 import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -125,8 +124,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * VelocityEngine.
      * @return VelocityEngine
      */
-    @Bean
-    public VelocityEngine velocityEngine() {
+    VelocityEngine velocityEngine() {
         return VelocityFactory.getEngine();
     }
  
@@ -140,16 +138,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new ParserPoolHolder();
     }
  
-    @Bean
-    public MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager() {
+    MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager() {
         return new MultiThreadedHttpConnectionManager();
     }
  
-    @Bean
-    public HttpClient httpClient() {
+    HttpClient httpClient() {
         return new HttpClient(multiThreadedHttpConnectionManager());
     }
- 
+
     @Bean
     public SAMLAuthenticationProvider samlAuthenticationProvider() {
         SAMLAuthenticationProvider samlAuthenticationProvider = new SAMLAuthenticationProvider();
@@ -224,13 +220,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	return new TLSProtocolConfigurer();
     }
     
-    @Bean
-    public ProtocolSocketFactory socketFactory() {
+    ProtocolSocketFactory socketFactory() {
         return new TLSProtocolSocketFactory(keyManager(), null, "default");
     }
 
-    @Bean
-    public Protocol socketFactoryProtocol() {
+    Protocol socketFactoryProtocol() {
         return new Protocol("https", socketFactory(), 443);
     }
 
@@ -258,7 +252,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return samlEntryPoint;
     }
     
-    @Bean
     public ExtendedMetadata extendedMetadata() {
     	ExtendedMetadata extendedMetadata = new ExtendedMetadata();
     	extendedMetadata.setIdpDiscoveryEnabled(false);
@@ -266,11 +259,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	return extendedMetadata;
     }
     
-    @Bean
-    @Qualifier("idp-ssocircle")
-    public ExtendedMetadataDelegate ssoCircleExtendedMetadataProvider() 
+    ExtendedMetadataDelegate extendedMetadataProvider() 
     		throws Exception {	
-    	@SuppressWarnings({"deprecation"})
     	ResourceBackedMetadataProvider metadataProvider 
             = new ResourceBackedMetadataProvider(new Timer(),
                 new ClasspathResource("/saml/idp.xml"));
@@ -281,19 +271,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	extendedMetadataDelegate.setMetadataRequireSignature(false);
     	return extendedMetadataDelegate;
     }
- 
+
+    /**
+     * IDP Metadata.
+     * @return MetadataManager
+     */
     @Bean
-    @Qualifier("metadata")
     public CachingMetadataManager metadata() throws Exception {
         List<MetadataProvider> providers = new ArrayList<>();
-        providers.add(ssoCircleExtendedMetadataProvider());
+        providers.add(extendedMetadataProvider());
         return new CachingMetadataManager(providers);
     }
  
+    /**
+     * SP Metadata Generator.
+     * @return MetadataGenerator
+     */
     @Bean
     public MetadataGenerator metadataGenerator() {
         MetadataGenerator metadataGenerator = new MetadataGenerator();
-        // FIXME
         metadataGenerator.setEntityId("jp:pigumer:sp");
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
@@ -412,7 +408,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	return new HTTPPAOS11Binding(parserPool());
     }
     
-    // Processor
+    /**
+     * SAML Processor.
+     * @return SAMLProcessor
+     */
     @Bean
     public SAMLProcessorImpl processor() {
         Collection<SAMLBinding> bindings = new ArrayList<>();
@@ -424,6 +423,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new SAMLProcessorImpl(bindings);
     }
 
+    /**
+     * SAML Filter.
+     * @return SAMLFilter
+     */
     @Bean
     public FilterChainProxy samlFilter() throws Exception {
         List<SecurityFilterChain> chains = new ArrayList<>();
@@ -439,7 +442,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             samlLogoutProcessingFilter()));
          return new FilterChainProxy(chains);
     }
-     
+
+    /**
+     * Authentication Manager.
+     * @return AuthenticationManager
+     * @throws Exception 
+     */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
