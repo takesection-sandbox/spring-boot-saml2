@@ -11,7 +11,9 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.velocity.app.VelocityEngine;
+import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
+import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider;
 import org.opensaml.util.resource.ClasspathResource;
 import org.opensaml.xml.parse.ParserPool;
@@ -30,6 +32,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLBootstrap;
+import org.springframework.security.saml.SAMLDiscovery;
 import org.springframework.security.saml.SAMLEntryPoint;
 import org.springframework.security.saml.SAMLLogoutFilter;
 import org.springframework.security.saml.SAMLLogoutProcessingFilter;
@@ -254,9 +257,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     public ExtendedMetadata extendedMetadata() {
     	ExtendedMetadata extendedMetadata = new ExtendedMetadata();
-    	extendedMetadata.setIdpDiscoveryEnabled(false);
+    	extendedMetadata.setIdpDiscoveryEnabled(true);
     	extendedMetadata.setSignMetadata(false);
     	return extendedMetadata;
+    }
+
+    @Bean
+    public SAMLDiscovery samlIDPDiscovery() {
+        SAMLDiscovery idpDiscovery = new SAMLDiscovery();
+        idpDiscovery.setIdpSelectionPath("/saml/idpSelection");
+        return idpDiscovery;
+    }
+    
+    public ExtendedMetadataDelegate ssoCircleExtendedMetadataProvider() 
+    		throws MetadataProviderException {	
+    	@SuppressWarnings({"deprecation"})
+    	HTTPMetadataProvider httpMetadataProvider 
+    		= new HTTPMetadataProvider("https://idp.ssocircle.com/idp-meta.xml", 5000);
+    	httpMetadataProvider.setParserPool(parserPool());
+    	ExtendedMetadataDelegate extendedMetadataDelegate =
+    			new ExtendedMetadataDelegate(httpMetadataProvider, extendedMetadata());
+    	extendedMetadataDelegate.setMetadataTrustCheck(false);
+    	extendedMetadataDelegate.setMetadataRequireSignature(false);
+    	return extendedMetadataDelegate;
     }
     
     ExtendedMetadataDelegate extendedMetadataProvider() 
@@ -275,11 +298,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * IDP Metadata.
      * @return MetadataManager
+     * @throws Exception Exception
      */
     @Bean
     public CachingMetadataManager metadata() throws Exception {
         List<MetadataProvider> providers = new ArrayList<>();
         providers.add(extendedMetadataProvider());
+        providers.add(ssoCircleExtendedMetadataProvider());
         return new CachingMetadataManager(providers);
     }
  
@@ -426,6 +451,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * SAML Filter.
      * @return SAMLFilter
+     * @throws Exception Exception
      */
     @Bean
     public FilterChainProxy samlFilter() throws Exception {
@@ -446,7 +472,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * Authentication Manager.
      * @return AuthenticationManager
-     * @throws Exception 
+     * @throws Exception Exception
      */
     @Bean
     @Override
