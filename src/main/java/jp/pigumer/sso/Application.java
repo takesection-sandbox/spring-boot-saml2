@@ -18,6 +18,32 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class Application {
     
+    @Autowired
+    private MetadataManager metadata;
+    
+    private boolean isForwarded(HttpServletRequest request) {
+        if (request.getAttribute("javax.servlet.forward.request_uri") == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @RequestMapping(value = "/saml/idpSelection", method = RequestMethod.GET)
+    public String idpSelection(HttpServletRequest request, Model model) {
+        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/landing";
+        } else {
+            if (isForwarded(request)) {
+                Set<String> idps = metadata.getIDPEntityNames();
+                model.addAttribute("idps", idps);
+                return "saml/idpselection";
+            } else {
+	        return "redirect:/";
+            }
+        }
+    }
+        
     @RequestMapping("/")
     String index(Model model) {
         model.addAttribute("hello", "/hello");
@@ -37,20 +63,6 @@ public class Application {
         return "hello";
     }
     
-    @Autowired
-    private MetadataManager metadata;
-
-    @RequestMapping(value = "/saml/idpSelection", method = RequestMethod.GET)
-    public String idpSelection(HttpServletRequest request, Model model) {
-        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
-            return "redirect:/landing";
-        } else {
-            Set<String> idps = metadata.getIDPEntityNames();
-            model.addAttribute("idps", idps);
-            return "saml/idpselection";
-        }
-    }
-        
     /**
      * main
      * @param args the command line arguments
