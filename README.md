@@ -7,12 +7,12 @@
 
 ## idp.xml
 
-src/main/resource/saml/idp.xmlを使用するIdentity Providerからダウンロードしてください。
+使用するIdentity Providerからsrc/main/resource/saml/idp.xmlにダウンロードしてください。
 
 ### OpenAMの場合
 
 ```
-curl -o idp.xml https://[IDP Host Name]/[ContextPath]/saml2/jsp/exportmetadata.jsp
+$ curl -o idp.xml https://[IDP Host Name]/[ContextPath]/saml2/jsp/exportmetadata.jsp
 ```
 
 ## samlKeystore.jks
