@@ -1,3 +1,5 @@
-/.nb-gradle/
-/build/
-/.gradle/
+.nb-gradle/
+build/
+.gradle/
+.idea/
+src/main/resources/saml/

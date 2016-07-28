@@ -18,3 +18,8 @@ curl -o idp.xml https://[IDP Host Name]/[ContextPath]/saml2/jsp/exportmetadata.j
 ## samlKeystore.jks
 
 src/main/resource/saml/samlKeystore.jksを作成してください。
+
+```
+$ keytool -genkeypair -alias apollo -keypass nalle123 -keystore samlKeystore.jks
+```
+
