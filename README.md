@@ -23,3 +23,12 @@ src/main/resource/saml/samlKeystore.jksを作成してください。
 $ keytool -genkeypair -alias apollo -keypass nalle123 -keystore samlKeystore.jks
 ```
 
+## アプリケーションのメタデータ
+
+http://localhost:8080/saml/metadata
+
+## ロードバランサがある場合の対応
+
+WebSecurityConfigで生成するSAMLContextProviderを、SAMLContextProviderImplからSAMLContextProviderLBに変更します。
+SAMLContextProviderLBにはロードバランサのURLやコンテキストパス等を設定します。
+
