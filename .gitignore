@@ -3,3 +3,5 @@ build/
 .gradle/
 .idea/
 src/main/resources/saml/
+*.iml
+
